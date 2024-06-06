@@ -1,0 +1,22 @@
+# Ignorer les fichiers de sauvegarde automatique de l'éditeur
+*~
+
+# Ignorer les fichiers de compilation
+*.o
+*.a
+*.so
+*.exe
+*.dll
+*.out
+
+# Ignorer le répertoire de données s'il est volumineux ou contient des fichiers sensibles
+data/
+
+# Ignorer les résultats générés
+results/
+
+# Ignorer les fichiers de notebook générés
+notebooks/*.html
+
+# Ignorer les fichiers de sauvegarde
+.vscode/
