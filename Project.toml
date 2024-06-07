@@ -3,8 +3,3 @@ uuid = "e3b0c442-98fc-472d-9889-b8d8e8b14d17"
 authors = ["Votre Nom <votre.email@example.com>"]
 version = "0.1.0"
 
-[deps]
-DataFrames = "a93c6f00-e57b-5684-b7b6-d8193f3e46e0"
-CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-XLSX = "fdbf4ff8-6e8d-57f0-bd41-0d2e5b5ae3ee"
-Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
