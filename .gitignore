@@ -14,6 +14,7 @@ data/
 
 # Ignorer les résultats générés
 results/
+plots/
 
 # Ignorer les fichiers de notebook générés
 notebooks/*.html
