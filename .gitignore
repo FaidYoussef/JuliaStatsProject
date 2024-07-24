@@ -8,6 +8,7 @@
 *.exe
 *.dll
 *.out
+*.png
 
 # Ignorer le répertoire de données s'il est volumineux ou contient des fichiers sensibles
 data/
