@@ -1,5 +1,7 @@
-include("fonctions.jl")
-include("Estim_WienerARD1_functions_revised.jl")
+include("../src/preparation_donnees.jl")
+include("../src/structuration_donnees.jl")
+include("../src/visualisation_donnees.jl")
+
 
 chemin_données = "/home/AD/faidy/JuliaStatsProject/data/real_data/"
 chemin_projet = "/home/AD/faidy/JuliaStatsProject/"
@@ -34,6 +36,8 @@ df_carac = readxlsheet(string(chemin_données, "Données_EDF_240611/Informations
 df_carac = MatrixToDataFrame(df_carac)
 df_carac = df_carac[:, [:REFERENCE, :REFERENCE2]]
 df_carac = unique(df_carac)
+
+
 
 # Création des enfants
 U2 = NAryTreeNode(missing, "U2", Vector{NAryTreeNode}())
@@ -149,58 +153,28 @@ xlsx_files = [file for file in xlsx_files if file != "~\$PERFOS_U2S4_3,48-3,47-3
 
 GVs_dict = set_GVs_dict(paliers)
 
-plot(GVs_dict[2.83].IND_COL_3.HEURES_MAT, GVs_dict[2.83].IND_COL_3.C2_IND_COL_3)
-scatter!(GVs_dict[2.83].IND_COL_3.HEURES_MAT, GVs_dict[2.83].IND_COL_3.C2_IND_COL_3)
-vline!(GVs_dict[2.83].maintenances.HEURES_MAT, color=:red)
-obs = GVs_dict[2.83].IND_COL_3.C2_IND_COL_3
-times = GVs_dict[2.83].IND_COL_3.HEURES_MAT
-insert!(obs, 1, 0.)
-insert!(times, 1, 0.)
+# Afficher l'arbre à partir des paliers
+print_tree_from_paliers(paliers, "arbre_des_GVs.txt")
 
-obs = obs[2:end]
-times = times[2:end]
+circuit_shapes = Dict{String, Symbol}()
+# coder le numéro de circuit en forme géométrique
+circuit_shapes["C1"]= :circle
+circuit_shapes["C2"]= :diamond
+circuit_shapes["C3"]= :rect
+circuit_shapes["C4"]= :star5
 
-obs = [x isa Number ? Float64(x) : tryparse(Float64, x) for x in obs]
-times = [x isa Number ? Float64(x) : tryparse(Float64, x) for x in times]
-delta_t = delta2(2, [times[1:30], times[31:57], times[58:end]])
-k = 2
-sum(times .< GVs_dict[2.83].maintenances.HEURES_MAT[1])
-obsVect = [obs[1:29], obs[30:56], obs[57:end]]
 
-rho = estimateur_rho_chapeau_revised(k, obsVect, delta_t)
-s2 = sigma2_chapeau_revised(rho, k, obsVect, delta_t)
-mu = mu_chapeau_revised(rho, k, obsVect, delta_t)
-delta_t
+circuit_enc_colors = Dict{String, Symbol}()
+circuit_enc_colors["C1"]= :brown
+circuit_enc_colors["C2"]= :purple
+circuit_enc_colors["C3"]= :grey
+circuit_enc_colors["C4"]= :magenta
 
-GVs_dict[2.83].maintenances.HEURES_MAT
-psARD1 = WienerARD1(mu, s2, 1., 130000, rho, [83877.0, 119225.0] )
-simulate!(psARD1)
-
-plot()
-plot!(psARD1)
-plot!(psARD1.underlying_process)
-scatter!(times, obs)
-savefig("essai_edf_U3_S5")
-while true
-    psARD1 = WienerARD1(mu, s2, 1., 130000, rho, [83877.0, 119225.0] )
-    simulate!(psARD1)
-
-    v = []
-    for temps in times
-        for (pos, vect) in enumerate(psARD1.new_times)
-            index = findfirst(t -> abs(t-temps) < 1, vect)
-            if !isnothing(index)
-                push!(v, (pos, index))
-                break
-            end
+for palier in paliers
+    for unite in palier.children
+        for sous_unite in unite.children
+            plot(sous_unite)
         end
-    end
-
-    sim = [psARD1.values[pos][index] for (pos, index) in v]
-
-    # println(length(sim))
-    if sum(abs.(sim -  obs)).<1
-        break
     end
 end
 
